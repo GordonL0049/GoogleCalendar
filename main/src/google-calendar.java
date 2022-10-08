@@ -8,12 +8,6 @@ import com.google.appinventor.components.runtime.AndroidNonvisibleComponent;
 import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.EventDispatcher;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.StatusLine;
-import org.apache.http.HttpStatus;
 import java.io.ByteArrayOutputStream;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import java.io.BufferedReader;
@@ -94,7 +88,11 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            GotCalendarTimeZone(calendarId, finalData);
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                                GotCalendarTimeZone(calendarId, finalData);
+                            }
                         }
                     });
                 } catch (IOException e) {
@@ -103,7 +101,7 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
             }
         });
     }
-    @SimpleFunction(description = "Gets the description of your calendar.")
+    @SimpleFunction(description = "Gets the description of your calendar and fires the GotCalendarDescription event after this.")
     public void GetCalendarDescription(){
         AsynchUtil.runAsynchronously(new Runnable() { // Always do get request Asynchronously
             @Override
@@ -119,7 +117,11 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            GotCalendarDescription(calendarId, finalData);
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                                GotCalendarDescription(calendarId, finalData);
+                            }
                         }
                     });
                 } catch (IOException e) {
@@ -144,7 +146,40 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            ListedCalendars(calendarid, YailList.makeList(finalData.split(",")));
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                                ListedCalendars(calendarid, YailList.makeList(finalData.split(",")));
+                            }
+                        }
+                    });
+                } catch (IOException e) {
+                    Error(e.getMessage());
+                }
+            }
+        });
+    }
+    @SimpleFunction(description = "Unsubscribes from this calendar. You cannot unsubscribe from a calendar that you own.")
+    public void UnsubscribeFromCalendar(){
+        AsynchUtil.runAsynchronously(new Runnable() { // Always do get request Asynchronously
+            @Override
+            public void run() {
+                try {
+                    String calendarId = URLEncoder.encode(calendarid, "UTF-8");
+                    BufferedReader readStream = new BufferedReader(new InputStreamReader(new URL(appsScript + "?calendarId=" + calendarId + "&action=unsubscribe").openStream()));
+                    String readLine; 
+                    StringBuilder data = new StringBuilder(); 
+                    while ((readLine = readStream.readLine()) != null) data.append(readLine); 
+                    readStream.close(); 
+                    final String finalData = data.toString(); 
+                    activity.runOnUiThread(new Runnable() { 
+                        @Override
+                        public void run() {
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                                UnsubscribedFromCalendar(calendarid);
+                            }
                         }
                     });
                 } catch (IOException e) {
@@ -169,7 +204,11 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            ListedOwnedCalendars(calendarid, YailList.makeList(finalData.split(",")));
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                                ListedOwnedCalendars(calendarid, YailList.makeList(finalData.split(",")));
+                            } 
                         }
                     });
                 } catch (IOException e) {
@@ -195,7 +234,11 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            ListedEventCreators(calendarid, eventid, YailList.makeList(finalData.split(",")));
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                               ListedEventCreators(calendarid, eventid, YailList.makeList(finalData.split(","))); 
+                            } 
                         }
                     });
                 } catch (IOException e) {
@@ -220,7 +263,11 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            GotCalendarColor(calendarid, Color.parseColor(finalData));
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                               GotCalendarColor(calendarid, Color.parseColor(finalData)); 
+                            }
                         }
                     });
                 } catch (IOException e) {
@@ -247,7 +294,11 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            AfterCalendarColorSet(calendarid, color);
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                               AfterCalendarColorSet(calendarid, color); 
+                            }
                         }
                     });
                 } catch (IOException e) {
@@ -276,7 +327,11 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            AfterCalendarTimezoneSet(calendarid, finalData);
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                                AfterCalendarTimezoneSet(calendarid, finalData);
+                            }
                         }
                     });
                 } catch (IOException e) {
@@ -303,7 +358,11 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            AddedGuestToEvent(calendarid, eventId, finalData);
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                                AddedGuestToEvent(calendarid, eventId, finalData);
+                            }
                         }
                     });
                 } catch (IOException e) {
@@ -312,7 +371,7 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
             }
         });
     }
-    @SimpleFunction(description = "Creates a new calendar and fires the CreatedCalendar event after this.")
+    @SimpleFunction(description = "Creates a new calendar and fires the CreatedCalendar event after this. The CalendarId property has no effect on this block.")
     public void CreateCalendar(final String calendarName){
         AsynchUtil.runAsynchronously(new Runnable() { // Always do get request Asynchronously
             @Override
@@ -329,7 +388,11 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            CreatedCalendar(calendarid, finalData);
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                                CreatedCalendar(finalData, calendarName);
+                            }
                         }
                     });
                 } catch (IOException e) {
@@ -355,13 +418,17 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            boolean hid = false;
-                            if (finalData == "true") {
-                                hid = true;
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
                             } else {
-                                hid = false;
+                                boolean hid = false;
+                                if (finalData == "true") {
+                                    hid = true;
+                                } else {
+                                    hid = false;
+                                }
+                                AfterCalendarSetIfHidden(calendarid, hid); 
                             }
-                            AfterCalendarSetIfHidden(calendarid, hid);
                         }
                     });
                 } catch (IOException e) {
@@ -389,13 +456,17 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            boolean hid = false;
-                            if (finalData == "true") {
-                                hid = true;
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
                             } else {
-                                hid = false;
+                                boolean hid = false;
+                                if (finalData == "true") {
+                                    hid = true;
+                                } else {
+                                    hid = false;
+                                }
+                                AfterCalendarSetIfSelected(calendarid, hid);
                             }
-                            AfterCalendarSetIfSelected(calendarid, hid);
                         }
                     });
                 } catch (IOException e) {
@@ -437,8 +508,8 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
         EventDispatcher.dispatchEvent(this, "ListedCalendars", calendarId, calendars);
     }
     @SimpleEvent(description = "This event is fired after the extension has received a list of the creators of this event.")
-    public void ListedEventCreators(String calendarId, String eventId, YailList calendars){
-        EventDispatcher.dispatchEvent(this, "ListedEventCreators", calendarId, eventId, calendars);
+    public void ListedEventCreators(String calendarId, String eventId, YailList creators){
+        EventDispatcher.dispatchEvent(this, "ListedEventCreators", calendarId, eventId, creators);
     }
     @SimpleEvent(description = "This event is fired after the extension has received a list of your owned calendars.")
     public void ListedOwnedCalendars(String calendarId, YailList calendars){
@@ -479,10 +550,14 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            String[] array = finalData.split("%2C");
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                               String[] array = finalData.split("%2C");
                             String title = array[0];
                             String eventId = array[1];
-                            CreatedSingleWholeDayEvent(title, eventId);
+                            CreatedSingleWholeDayEvent(title, eventId); 
+                            }
                         }
                     });
                 } catch (IOException e) {
@@ -516,10 +591,14 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
                     activity.runOnUiThread(new Runnable() { 
                         @Override
                         public void run() {
-                            String[] array = finalData.split("%2C");
-                            String title = array[0];
-                            String eventId = array[1];
-                            CreatedSingleWholeDayEvent(title, eventId);
+                            if (finalData.startsWith("%24")) {
+                                Error(finalData.replace("%24", ""));
+                            } else {
+                                String[] array = finalData.split("%2C");
+                                String title = array[0];
+                                String eventId = array[1];
+                                CreatedSingleWholeDayEvent(title, eventId);
+                            }
                         }
                     });
                 } catch (IOException e) {
@@ -876,6 +955,10 @@ public class GoogleCalendar extends AndroidNonvisibleComponent {
     @SimpleEvent(description = "This event is fired when the extension has deleted the calendar.")
     public void DeletedCalendar(String calendarId) {
         EventDispatcher.dispatchEvent(this, "DeletedCalendar", calendarId);
+    }
+    @SimpleEvent(description = "This event is fired when the extension has unsubscribed you from the calendar.")
+    public void UnsubscribedFromCalendar(String calendarId) {
+        EventDispatcher.dispatchEvent(this, "UnsubscribedFromCalendar", calendarId);
     }
     @SimpleEvent(description = "This event is fired when the extension has deleted the event.")
     public void DeletedEvent(String calendarId, String eventId) {
