@@ -94,7 +94,7 @@ function doGet(e) {
       array.forEach(element => output.push(element));
       return ContentService.createTextOutput(output.join(","));
     } else if (e.parameter.action == "getEventCreationDate") {
-      return ContentService.createTextOutput(CalendarApp.getCalendarById(id).getEventById(e.parameter.eventId).getDateCreated);
+      return ContentService.createTextOutput(CalendarApp.getCalendarById(id).getEventById(e.parameter.eventId).getDateCreated());
     } else if (e.parameter.action == "createCalendar"){
       return ContentService.createTextOutput(CalendarApp.createCalendar(e.parameter.name).getId());
     } else if (e.parameter.action == "countEmailReminders") {
@@ -104,7 +104,8 @@ function doGet(e) {
       return ContentService.createTextOutput("Added email reminder");
     } else if (e.parameter.action == "unsubscribe") {
       CalendarApp.getCalendarById(id).unsubscribeFromCalendar();
-    }
+      return ContentService.createTextOutput("Unsubscribed from calendar.");
+    } 
   } catch (err) {
     return ContentService.createTextOutput("%24" + err.message);
   }
